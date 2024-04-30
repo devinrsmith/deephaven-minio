@@ -1,0 +1,37 @@
+name: deephaven-minio
+
+services:
+  deephaven:
+    image: ghcr.io/deephaven/server:0.34.0
+    volumes:
+      - ./deephaven/deephaven.prop:/opt/deephaven/config/deephaven.prop:ro
+    ports:
+      - 10000:10000
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2024-02-04T22-36-13Z
+    command: server /data --console-address ":9001"
+    hostname:
+      minio.example.com
+    environment:
+      # Enable Virtual Host-style paths
+      # https://min.io/docs/minio/linux/reference/minio-server/settings/core.html#envvar.MINIO_DOMAIN
+      MINIO_DOMAIN: minio.example.com
+    networks:
+      default:
+        aliases:
+          # Add an alias for each bucket
+          - test-data.minio.example.com
+    expose:
+      - "9000"
+      - "9001"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - /tmp/minio:/data
