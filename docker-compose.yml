@@ -2,7 +2,7 @@ name: deephaven-minio
 
 services:
   deephaven:
-    image: ghcr.io/deephaven/server:0.34.0
+    image: ghcr.io/deephaven/server:0.34.1
     volumes:
       - ./deephaven/deephaven.prop:/opt/deephaven/config/deephaven.prop:ro
     ports:
